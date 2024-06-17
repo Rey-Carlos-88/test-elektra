@@ -11,3 +11,138 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+nav {
+  background-color: #363a45;
+  height: auto;
+  text-align: center;
+  width: 250px;
+}
+nav ul {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 0;
+}
+
+nav li {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+nav li a {
+  color: white;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.nav-active {
+  color: grey;
+  transition: all .3s ease-out;
+}
+
+.content-all-characters{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 15px;
+}
+
+h1.table-title {
+  margin-bottom: -60px;
+}
+
+.conten-filter{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: end;
+}
+
+.filter-name input {
+  height: 30px;
+  margin-top: 15px;
+  margin-right: 20px;
+}
+
+.filter-status {
+  margin-right: 20px;
+}
+
+.filter-species input {
+  height: 30px;
+  margin-top: 15px;
+  margin-right: 20px;
+}
+
+.filter-type input {
+  height: 30px;
+  margin-top: 15px;
+  margin-right: 20px;
+}
+
+
+
+.pagination-text p {
+  font-family: cursive;
+}
+
+.content-pagination {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.content-pagination-buttons {
+  display: flex;
+  width: 145px;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 20px;
+  justify-content: space-between;
+  
+}
+
+.content-pagination-buttons button {
+  cursor: pointer;
+  color: #000;
+  font-size: larger;
+}
+
+.pagination-button-previe {
+  background-color: #007bff;
+  transition: box-shadow 0.3s ease-in-out; 
+}
+
+.pagination-button-previe:hover {
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pagination-button-next {
+  background-color: #007bff;
+  transition: box-shadow 0.3s ease-in-out; 
+}
+
+.pagination-button-next:hover {
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+
+.table-characters {
+  flex-direction: column;
+  border: 2px solid #000;
+}
+
+img.character-imagen {
+  height: 70px;
+}
