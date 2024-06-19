@@ -318,7 +318,6 @@ export const Characters = () => {
                                 setTypeCharacter(e.target.value)
                             }}
                         />
-
                     </div>
 
                     <div className='filter-gender'>
@@ -402,8 +401,6 @@ export const Characters = () => {
                                     </Button>
                                 </div> 
                             </div>
-                            
-                        
                         </div>
                         
                         <div className='table-characters'>

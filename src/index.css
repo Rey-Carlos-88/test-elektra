@@ -195,6 +195,13 @@ img.character-imagen {
   height: 70px;
 }
 
+.content-title-id {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 370px;
+  justify-content: space-between;
+}
 
 /* codigo css para loading */
 .cargando{ 
