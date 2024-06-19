@@ -4,7 +4,7 @@ import Locations from '../components/Locations/locations';
 
 const routes = [
     {
-        path: '/characters/pages/',
+        path: '/characters',
         Component: Characters,
         title: 'Characters'
     },
