@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { apiGetLocations } from '../../api/services'
+import { apiGetLocations } from '../../api/servicesLocation'
 
 export const Locations = () => {
 

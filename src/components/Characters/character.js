@@ -21,26 +21,27 @@ import Button from '@mui/material/Button';
 
 import { apiGetCharacters } from '../../api/services'
 
-import { useParams } from 'react-router-dom';
-
-
 export const Characters = () => {
-    let { params } = useParams();
-    //console.log('dasdasd => ',params)
 
+    const [loadingPage, setLoadingPage] = useState(true)
+
+    // estaos que gurdar la paginacion de la tabla
     const [page, setPage] = useState(1)
     const [finalPage, setFinalPage] = useState()
+    // estado donde se guarda y se cargan los datos del tablero 
     const [characterData, setCharacterData] = useState([]);
+    // estado que guarda el total de resultados de la busqueda
+    const [allResults, setAllResults] = useState('');
 
+    // estados que gurdar los parametros de busqueda 
     const [nameCharacter, setNameCharacter] = useState('')
     const [statusCharacter, setStatusCharacter] = useState('');
     const [speciesCharacter, setSpeciesCharacter] = useState('');
     const [typeCharacter, setTypeCharacter] = useState('');
-    const [generCharacter, setGenderCharacter] = useState('');
+    const [genderCharacter, setGenderCharacter] = useState('');
 
+    // estado que guarda los datos de busqueda 
     const [findCharacter, setFindCharacter] = useState([]);
-
-
 
     const columnsCharacters = [
         {
@@ -60,14 +61,14 @@ export const Characters = () => {
         {
             id: 'status',
             label: 'Status',
-            minWidth: 90,
+            minWidth: 80,
             aling: 'right',
 
         },
         {
             id: 'species',
             label: 'Species',
-            minWidth: 90,
+            minWidth: 80,
             aling: 'right',
         },
         {
@@ -79,26 +80,29 @@ export const Characters = () => {
         {
             id: 'gender',
             label: 'Gender',
-            minWidth: 90,
+            minWidth: 80,
             aling: 'right',
         },
         
     ]
 
+    //funciopn que manda a llamar el servicio para cargar datos del tablero
     const onGetCharacter = async ( 
         pagesArg = page, 
         findArg = findCharacter, 
     ) => {
         try {
             const fetchCharacter = await apiGetCharacters(pagesArg, findArg);
-            console.log('consumo de api => ',fetchCharacter);
             setCharacterData(fetchCharacter.results);
-            setFinalPage(fetchCharacter.info.pages)
+            setAllResults(fetchCharacter.info.count);
+            setFinalPage(fetchCharacter.info.pages);
+            setLoadingPage(false);
         } catch (error) {
-            console.log('Error de servicon en compoente => ',error)
-        }
+            throw error
+        }  
     }
 
+    // funcion para crear encabezado del tablero 
     const createData = (image, name, status, species, type, gender) => {
         return{
             image,
@@ -110,50 +114,63 @@ export const Characters = () => {
         }
     }
 
+    // funcion que crea los datos para el tablero
     const rows = characterData.map(item => 
         createData(item.image, item.name, item.status, item.species, item.type, item.gender, item.id)
     )
 
+    const onLoadingPage = () => {
+        return (
+            <div id="contenedor">
+                <div class="contenedor-loader">
+                    <div class="loader"></div>
+                </div>
+                <div class="cargando">Cargando...</div>
+            </div>
+        )
+    }
 
     useEffect(() => {
-        onGetCharacter()
+        onGetCharacter();
+        setLoadingPage(true)
     }, [])
 
     
     const handleChangeStatus = (event) => {
-        console.log('data select => ',event.target.value)
         setStatusCharacter(event.target.value);
     };
 
+    const handleChangeGender = (event) => {
+        setGenderCharacter(event.target.value);
+    };
+
+    // funcion para avanzar a la siguiente pagina del tablero 
     const nextPage = () => {
         const valuePage = page+1
         setPage(valuePage)
-        console.log('pagina sigiente => ',valuePage)
         onGetCharacter(valuePage)
     }
 
+    // funcion para regresa a la pagina anteriro del tablero
     const previePage = () => {
         const valuePage = page-1
         setPage(valuePage)
-        console.log('pagina sigiente => ',valuePage)
         onGetCharacter(valuePage)  
     }
 
+    // funcion para realizar la busqueda y actulizar los datos del tablero 
     const searchCharacter = () => {
-        console.log('funcion para concatenar datos de  busqueda')
-        console.log('data maneCharacter => ',nameCharacter)
-        console.log('data maneCharacter => ',statusCharacter)
-
         var dataFilter = []
 
         if (nameCharacter !== '') {
-            console.log('guadar data y concatenar nameCharacter')
-            var nameData = {type:'name', value: nameCharacter}
+            var nameData = {
+                    type:'name', 
+                    value: nameCharacter
+                }
             dataFilter.push(nameData)
         }
 
         if (statusCharacter !== '') {
-            console.log('guadar data y concatenar statusCharacter')
             var statusData = {}
             if ( statusCharacter == 1 ) {
                 statusData = {
@@ -176,50 +193,84 @@ export const Characters = () => {
 
         }
 
-        if (dataFilter.length > 0) {
-            console.log('realizar busqueda array con data => ',dataFilter)
-            onGetCharacter(page, dataFilter)
-            setFindCharacter(dataFilter)
+        if (speciesCharacter !== '') {
+            var nameSpecie = {
+                    type:'species', 
+                    value: speciesCharacter
+                }
+            dataFilter.push(nameSpecie)
+        }
 
-        } else {
-            console.log('no se han ingresado datos de busqueda => ',dataFilter)
-            alert('Ingresa datos para realizar busqueda de personaje')
+        if (typeCharacter !== '') {
+            var nameSpecie = {
+                    type:'type', 
+                    value: typeCharacter
+                }
+            dataFilter.push(nameSpecie)
         }
 
 
-        console.log('data de busqueda => ',dataFilter)
+        if (genderCharacter !== '') {
+            var genderData = {}
+            if ( genderCharacter == 1 ) {
+                genderData = {
+                    type: 'gender',
+                    value: 'female'
+                }
+            }   else if ( genderCharacter == 2 ) {
+                genderData = {
+                    type: 'gender',
+                    value: 'male'
+                }
+            }   else if (genderCharacter == 3) {
+                genderData = {
+                    type: 'gender',
+                    value: 'genderless'
+                }
+            }   else if ( genderCharacter == 4 ) {
+                genderData = {
+                    type: 'gender',
+                    value: 'unknown'
+                }
+            }
+            dataFilter.push(genderData)
+        }
 
+        if (dataFilter.length > 0) {
+            onGetCharacter(1, dataFilter);
+            setFindCharacter(dataFilter);
 
+        } else {
+            alert('Enter data to perform a search')
+        }
     }
 
+    // funcion que limpia los datos de la busqueda a su valores iniciales y limpia 
+    // los estados de los campos de busqueda 
     const clearSearchCharacter = () => {
-
-        setNameCharacter('')
-        setStatusCharacter('')
-        setFindCharacter([])
-        setPage(1)
-        onGetCharacter(1, [] )
+        setLoadingPage(true)
+        setNameCharacter('');
+        setStatusCharacter('');
+        setSpeciesCharacter('');
+        setTypeCharacter('');
+        setGenderCharacter();
+        setFindCharacter([]);
+        setPage(1);
+        onGetCharacter(1, [] );
     }
-
-
-    //console.log('valor de next page => ',page)
-    //console.log('total pages api => ',finalPage)
-
-    console.log('data para realizar busqueda => ',findCharacter)
-
-
 
     return (
         <>
             <div className='content-all-characters'>
                 <h1 className='table-title'>Characters</h1>
+                
                 <div className='conten-filter'>
                     <div className='filter-name'>
                         <input 
                             type='text'
                             value={nameCharacter}
+                            placeholder='Name:'
                             onChange={(e) => {
-                                console.log('click en input name',e.target.value)
                                 setNameCharacter(e.target.value)
                             }}
                         />
@@ -250,8 +301,8 @@ export const Characters = () => {
                         <input 
                             type='text'
                             value={speciesCharacter}
+                            placeholder='Species: '
                             onChange={(e) => {
-                                console.log('click en input SpeciesCharacter',e.target.value)
                                 setSpeciesCharacter(e.target.value)
                             }}
                         />
@@ -262,116 +313,147 @@ export const Characters = () => {
                         <input 
                             type='text'
                             value={typeCharacter}
+                            placeholder='Type:'
                             onChange={(e) => {
-                                console.log('click en input TypeCharacter',e.target.value)
                                 setTypeCharacter(e.target.value)
                             }}
                         />
 
                     </div>
 
-
-                    <div className='filter-button'>
-                        <button 
-                            disabled={''}
-                            onClick={() => {
-                                console.log('realizar busqueda')
-                                searchCharacter();
-                            }}
-                        >
-                            search character
-                        </button>
-                    </div>
-
-                    <div className='clear-button'>
-                        <button 
-                            disabled={''}
-                            onClick={() => {
-                                console.log('limpiar datos de busqueda')
-                                clearSearchCharacter();
-                            }}
-                        >
-                            Clear Data
-                        </button>
-                    </div>
-                </div>
-
-                <div className='content-pagination'>
-                    <div className='pagination-text'>
-                        <p>Pages: {page} de: {finalPage}</p>
-                    </div>
-                    <div className='content-pagination-buttons'>
-                       <div className='pagination-button-previe'>
-                            <Button type='button-next'
-                                onClick={() => {
-                                    previePage();
+                    <div className='filter-gender'>
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                            <InputLabel id="demo-simple-select-standard-label">
+                                Gender
+                            </InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label"
+                                id="demo-simple-select-standard"
+                                value={genderCharacter}
+                                onChange={(event) => {
+                                    handleChangeGender(event)
                                 }}
-                                disabled={page == 1}
+                                label="status"
                             >
-                                {'<'}
+                                <MenuItem value={1}>Female</MenuItem>
+                                <MenuItem value={2}>Male</MenuItem>
+                                <MenuItem value={3}>Genderless</MenuItem>
+                                <MenuItem value={4}>Unknown</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+
+
+                    <div className='content-filter-buttons'>
+                        <div className='filter-button'>
+                            <Button 
+                                disabled={''}
+                                onClick={() => {
+                                    setLoadingPage(true)
+                                    searchCharacter();
+                                }}
+                            >
+                                search
                             </Button>
                         </div>
-                        <div className='pagination-button-next'>
-                            <Button
+                      
+                        <div className='clear-button'>
+                            <Button 
+                                disabled={''}
                                 onClick={() => {
-                                    nextPage();
+                                    clearSearchCharacter();
                                 }}
-                                disabled={page == finalPage}
                             >
-                                {'>'}
+                                Clear
                             </Button>
-                        </div> 
+                        </div>
                     </div>
-                    
-                
+
                 </div>
 
-                <div className='table-characters'>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    {columnsCharacters.map((column) => {
-                                        return (
-                                        <TableCell 
-                                            key={column.id}
-                                            aling={column.aling}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                        )  
-                                    })}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows
-                                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    // .slice(20)
-                                    .map(row => {
-                                        return(
-                                            <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
-                                                {columnsCharacters.map(colum => {
-                                                    const value = row[colum.id]
-                                                    return (
-                                                        <TableCell key={colum.id} aling={colum.aling}>
-                                                            {colum.format
-                                                                ? <a href='#'>
-                                                                    <img className='character-imagen' src={`${value}`}/>
-                                                                </a>
-                                                                : value}
-                                                        </TableCell>
-                                                    )
-                                                })}
+                {loadingPage ? (
+                    onLoadingPage()
+                ) : (
+                    <>
+                        <div className='content-pagination'>
+                            <div className='pagination-text'>
+                                <p>Total Results : {allResults}</p>
+                                <p>Pages: {page} de: {finalPage}</p>
+                            </div>
+                            <div className='content-pagination-buttons'>
+                            <div className='pagination-button-previe'>
+                                    <Button type='button-next'
+                                        onClick={() => {
+                                            previePage();
+                                        }}
+                                        disabled={page == 1}
+                                    >
+                                        <strong>{'<'}</strong>
+                                    </Button>
+                                </div>
+                                <div className='pagination-button-next'>
+                                    <Button
+                                        onClick={() => {
+                                            nextPage();
+                                        }}
+                                        disabled={page == finalPage}
+                                    >
+                                        {'>'}
+                                    </Button>
+                                </div> 
+                            </div>
+                            
+                        
+                        </div>
+                        
+                        <div className='table-characters'>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            {columnsCharacters.map((column) => {
+                                                return (
+                                                <TableCell 
+                                                    key={column.id}
+                                                    aling={column.aling}
+                                                    style={{ minWidth: column.minWidth }}
+                                                >
+                                                    {column.label}
+                                                </TableCell>
+                                                )  
+                                            })}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {rows
+                                            // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            // .slice(20)
+                                            .map(row => {
+                                                return(
+                                                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                                                        {columnsCharacters.map(colum => {
+                                                            const value = row[colum.id]
+                                                            return (
+                                                                <TableCell key={colum.id} aling={colum.aling}>
+                                                                    {colum.format
+                                                                        ? <a href='#'>
+                                                                            <img className='character-imagen' src={`${value}`}/>
+                                                                        </a>
+                                                                        : value}
+                                                                </TableCell>
+                                                            )
+                                                        })}
 
-                                            </TableRow>
-                                        )
-                                    })
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </div>
+                                                    </TableRow>
+                                                )
+                                            })
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </div>
+                    </>
+                )}
             </div>
         </>
     )
